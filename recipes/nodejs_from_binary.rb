@@ -28,7 +28,14 @@ end
 
 # package_stub is for example: "node-v0.8.20-linux-x64.tar.gz"
 version = "v#{node['nodejs']['version']}/"
-filename = "node-v#{node['nodejs']['version']}-linux-#{arch}.tar.gz"
+
+case node['platform_family']
+when 'windows'
+  filename = "node-v#{node['nodejs']['version']}-x86.msi"
+else
+  filename = "node-v#{node['nodejs']['version']}-linux-#{arch}.tar.gz"
+end
+
 if node['nodejs']['binary']['url']
   nodejs_bin_url = node['nodejs']['binary']['url']
   checksum = node['nodejs']['binary']['checksum']
@@ -37,10 +44,18 @@ else
   checksum = node['nodejs']['binary']['checksum']["linux_#{arch}"]
 end
 
-ark 'nodejs-binary' do
-  url nodejs_bin_url
-  version node['nodejs']['version']
-  checksum checksum
-  has_binaries ['bin/node', 'bin/npm']
-  action :install
+case node['platform_family']
+when 'windows'
+  windows_package "Nodejs version #{node['nodejs']['version']}" do
+    source nodejs_bin_url
+    installer_type :msi
+    action :install
+  end
+else
+  ark 'nodejs-binary' do
+    url nodejs_bin_url
+    version node['nodejs']['version']
+    checksum checksum
+    has_binaries ['bin/node', 'bin/npm']
+    action :install
 end
