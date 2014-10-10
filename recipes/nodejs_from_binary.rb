@@ -18,14 +18,6 @@
 
 Chef::Resource::User.send(:include, NodeJs::Helper)
 
-# Shamelessly borrowed from http://docs.opscode.com/dsl_recipe_method_platform.html
-# Surely there's a more canonical way to get arch?
-if node['kernel']['machine'] =~ /armv6l/
-  arch = 'arm-pi' # assume a raspberry pi
-else
-  arch = node['kernel']['machine'] =~ /x86_64/ ? 'x64' : 'x86'
-end
-
 # package_stub is for example: "node-v0.8.20-linux-x64.tar.gz"
 version = "v#{node['nodejs']['version']}/"
 
@@ -33,6 +25,13 @@ case node['platform_family']
 when 'windows'
   filename = "node-v#{node['nodejs']['version']}-x86.msi"
 else
+  # Shamelessly borrowed from http://docs.opscode.com/dsl_recipe_method_platform.html
+  # Surely there's a more canonical way to get arch?
+  if node['kernel']['machine'] =~ /armv6l/
+    arch = 'arm-pi' # assume a raspberry pi
+  else
+    arch = node['kernel']['machine'] =~ /x86_64/ ? 'x64' : 'x86'
+  end
   filename = "node-v#{node['nodejs']['version']}-linux-#{arch}.tar.gz"
 end
 
