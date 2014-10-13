@@ -3,8 +3,7 @@ include NodeJs::Helper
 use_inline_resources if defined?(use_inline_resources)
 
 action :install do
-  puts ENV['APPDATA']
-  execute "install NPM package #{new_resource.name}" do
+    execute "install NPM package #{new_resource.name}" do
     cwd new_resource.path
     command "npm install #{npm_options}"
     user new_resource.user
