@@ -57,4 +57,5 @@ else
     checksum checksum
     has_binaries ['bin/node', 'bin/npm']
     action :install
+  end
 end
