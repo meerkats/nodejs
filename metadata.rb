@@ -12,7 +12,7 @@ depends 'yum-epel'
 depends 'build-essential'
 depends 'ark'
 depends 'apt'
-depends "windows"
+depends 'windows'
 
 %w(debian ubuntu centos redhat smartos windows).each do |os|
   supports os

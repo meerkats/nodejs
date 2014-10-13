@@ -4,7 +4,6 @@ use_inline_resources if defined?(use_inline_resources)
 
 action :install do
   execute "install NPM package #{new_resource.name}" do
-    Chef::Log.info("IINSTALLING: #{new_resource.name}")
     cwd new_resource.path
     command "npm install #{npm_options}"
     user new_resource.user
@@ -39,8 +38,6 @@ def npm_options
 end
 
 def npm_package
-  Chef::Log.error("MADE IT TO PACKAGE SELECTION")
-  Chef::Log.error("Installing package #{new_resource}")
   if new_resource.json
     return new_resource.json.is_a?(String) ? new_resource.json : nil
   elsif new_resource.url

@@ -21,10 +21,8 @@
 include_recipe 'nodejs::nodejs'
 include_recipe 'nodejs::npm'
 
-Chef::Log.info("ITERATE OVER PACKAGES")
 node['nodejs']['npm_packages'].each do |pkg|
   f = nodejs_npm pkg['name'] do
-    Chef::Log.info("DO NOTHIGN")
     action :nothing
   end
   pkg.each do |key, value|
