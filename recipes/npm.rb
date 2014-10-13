@@ -19,8 +19,8 @@
 #
 case node['platform_family']
 when 'windows'
-  # Add users APPDATA path, on windows this is where modules are installed
-  windows_path ENV['APPDATA']+'\\npm\\' do
+  # Add AppData\npm to path for Windows, npm modules are installed there
+  windows_path "#{ENV['APPDATA']}/npm/" do
     action :add
   end
 end
