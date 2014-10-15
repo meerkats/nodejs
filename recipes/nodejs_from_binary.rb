@@ -18,17 +18,23 @@
 
 Chef::Resource::User.send(:include, NodeJs::Helper)
 
-# Shamelessly borrowed from http://docs.opscode.com/dsl_recipe_method_platform.html
-# Surely there's a more canonical way to get arch?
-if node['kernel']['machine'] =~ /armv6l/
-  arch = 'arm-pi' # assume a raspberry pi
-else
-  arch = node['kernel']['machine'] =~ /x86_64/ ? 'x64' : 'x86'
-end
-
 # package_stub is for example: "node-v0.8.20-linux-x64.tar.gz"
 version = "v#{node['nodejs']['version']}/"
-filename = "node-v#{node['nodejs']['version']}-linux-#{arch}.tar.gz"
+
+case node['platform_family']
+when 'windows'
+  filename = "node-v#{node['nodejs']['version']}-x86.msi"
+else
+  # Shamelessly borrowed from http://docs.opscode.com/dsl_recipe_method_platform.html
+  # Surely there's a more canonical way to get arch?
+  if node['kernel']['machine'] =~ /armv6l/
+    arch = 'arm-pi' # assume a raspberry pi
+  else
+    arch = node['kernel']['machine'] =~ /x86_64/ ? 'x64' : 'x86'
+  end
+  filename = "node-v#{node['nodejs']['version']}-linux-#{arch}.tar.gz"
+end
+
 if node['nodejs']['binary']['url']
   nodejs_bin_url = node['nodejs']['binary']['url']
   checksum = node['nodejs']['binary']['checksum']
@@ -37,10 +43,19 @@ else
   checksum = node['nodejs']['binary']['checksum']["linux_#{arch}"]
 end
 
-ark 'nodejs-binary' do
-  url nodejs_bin_url
-  version node['nodejs']['version']
-  checksum checksum
-  has_binaries ['bin/node', 'bin/npm']
-  action :install
+case node['platform_family']
+when 'windows'
+  windows_package "Nodejs version #{node['nodejs']['version']}" do
+    source nodejs_bin_url
+    installer_type :msi
+    action :install
+  end
+else
+  ark 'nodejs-binary' do
+    url nodejs_bin_url
+    version node['nodejs']['version']
+    checksum checksum
+    has_binaries ['bin/node', 'bin/npm']
+    action :install
+  end
 end

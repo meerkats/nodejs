@@ -17,6 +17,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+case node['platform_family']
+when 'windows'
+  # Add AppData\npm to path for Windows, npm modules are installed there
+  windows_path "#{ENV['APPDATA']}/npm/" do
+    action :add
+  end
+end
 
 case node['nodejs']['npm']['install_method']
 when 'embedded'
